@@ -1,0 +1,5 @@
+{
+  "name": "PromptLint (P-Lint)",
+  "description": "A static and AI-powered linter for prompts to ensure clarity, structure, and logical consistency.",
+  "requestFramePermissions": []
+}
