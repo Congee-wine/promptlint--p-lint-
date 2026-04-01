@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import { type OnMount } from '@monaco-editor/react'
 import Sidebar from '@/components/sidebar'
 import EditorPanel from '@/components/editorPanel'
-import { useLint, usePromptAI } from '@/hooks'
+import { useLint, usePromptAI, useHistory } from '@/hooks'
 
 export default function App() {
+  const { updateActiveRecord } = useHistory()
   const [content, setContent] = useState('# Role: \n\n# Task: \n\n# AC: \n')
   const editorRef = useRef<any>(null)
   const monacoRef = useRef<any>(null)
@@ -30,6 +31,14 @@ export default function App() {
 
   const score = analysis?.score || 100 - lintResults.length * 10
 
+  const handleFix = () => {
+    handleAutoFix(content, (fixed) => {
+      setContent(fixed)
+      runLint(fixed)
+      updateActiveRecord(fixed)
+    })
+  }
+
   return (
     <div className="flex h-screen bg-[#0a0a0a] text-white font-sans overflow-hidden">
       <Sidebar
@@ -37,12 +46,7 @@ export default function App() {
         lintResults={lintResults}
         analysis={analysis}
         onAnalyze={() => handleDeepAnalyze(content)}
-        onFix={() =>
-          handleAutoFix(content, (fixed) => {
-            setContent(fixed)
-            runLint(fixed)
-          })
-        }
+        onFix={handleFix}
         isAnalyzing={isAnalyzing}
         isFixing={isFixing}
       />
