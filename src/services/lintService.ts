@@ -74,6 +74,7 @@ export async function lintPrompt(content: string): Promise<LintResult[]> {
   return results
 }
 
+// 2. 深度分析
 export async function deepAnalyzePrompt(content: string) {
   if (!content.trim()) return null
 
@@ -107,6 +108,7 @@ export async function deepAnalyzePrompt(content: string) {
   }
 }
 
+// 3. 一键重构
 export async function autoFixPrompt(content: string) {
   try {
     const model = 'gemini-3-flash-preview'

@@ -25,6 +25,7 @@ export interface SidebarProps {
   onFix: () => void
   isAnalyzing: boolean
   isFixing: boolean
+  onNavigateToError: (result: LintResult) => void
 }
 
 export type SymbolIconProps = {

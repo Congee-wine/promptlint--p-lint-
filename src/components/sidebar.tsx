@@ -21,6 +21,7 @@ export default function Sidebar(props: SidebarProps) {
     onFix,
     isAnalyzing,
     isFixing,
+    onNavigateToError,
   } = props
 
   const getScoreColor = (s: number) => {
@@ -73,13 +74,14 @@ export default function Sidebar(props: SidebarProps) {
               lintResults.map((res, i) => (
                 <div
                   key={i}
+                  onClick={() => onNavigateToError(res)}
                   className={cn(
-                    'p-3 rounded-lg border text-sm flex gap-3',
+                    'p-3 rounded-lg border text-sm flex gap-3 cursor-pointer transition-colors',
                     res.severity === 'error'
-                      ? 'bg-red-400/10 border-red-400/20 text-red-400'
+                      ? 'bg-red-400/10 border-red-400/20 text-red-400 hover:bg-red-400/25 hover:border-red-400/40'
                       : res.severity === 'warning'
-                        ? 'bg-yellow-400/10 border-yellow-400/20 text-yellow-400'
-                        : 'bg-blue-400/10 border-blue-400/20 text-blue-400',
+                        ? 'bg-yellow-400/10 border-yellow-400/20 text-yellow-400 hover:bg-yellow-400/25 hover:border-yellow-400/40'
+                        : 'bg-blue-400/10 border-blue-400/20 text-blue-400 hover:bg-blue-400/25 hover:border-blue-400/40',
                   )}
                 >
                   {res.severity === 'error' ? (
