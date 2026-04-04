@@ -5,8 +5,9 @@ import EditorPanel from '@/components/editorPanel'
 import { useLint, usePromptAI, useHistory } from '@/hooks'
 
 export default function App() {
-  const { updateActiveRecord } = useHistory()
-  const [content, setContent] = useState('# Role: \n\n# Task: \n\n# AC: \n')
+  const { updateActiveRecord, initialContent } = useHistory()
+
+  const [content, setContent] = useState(initialContent)
   const editorRef = useRef<any>(null)
   const monacoRef = useRef<any>(null)
 

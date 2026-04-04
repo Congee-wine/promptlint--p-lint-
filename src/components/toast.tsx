@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Check } from 'lucide-react'
-
-interface ToastProps {
-  message: string
-  visible: boolean
-}
+import { type ToastProps } from '@/types'
 
 export default function Toast({ message, visible }: ToastProps) {
   const [show, setShow] = useState(false)

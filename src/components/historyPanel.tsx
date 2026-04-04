@@ -1,14 +1,5 @@
 import { X, Trash2, Clock } from 'lucide-react'
-import { HistoryRecord } from '@/hooks/useHistory'
-
-interface HistoryPanelProps {
-  open: boolean
-  records: HistoryRecord[]
-  activeId: string | null
-  onSelect: (content: string, id: string) => void
-  onDelete: (id: string) => void
-  onClose: () => void
-}
+import { type HistoryPanelProps } from '@/types'
 
 export default function HistoryPanel({
   open,

@@ -1,18 +1,19 @@
 import { useState, useRef } from 'react'
 import { editorOptions } from '@/utils/editorOptions'
-import Editor, { OnMount } from '@monaco-editor/react'
-import { ChevronRight, History, Copy, Upload, Download } from 'lucide-react'
+import Editor from '@monaco-editor/react'
 import { useHistory } from '@/hooks'
-
+import { type EditorPanelProps } from '@/types'
 import HistoryPanel from './historyPanel'
 import SymbolIcon from './symbolIcon'
 import Toast from './toast'
-
-interface EditorPanelProps {
-  content: string
-  onChange: (val: string) => void
-  onMount: OnMount
-}
+import {
+  ChevronRight,
+  History,
+  Copy,
+  Plus,
+  Upload,
+  Download,
+} from 'lucide-react'
 
 export default function EditorPanel({
   content,
@@ -20,16 +21,35 @@ export default function EditorPanel({
   onMount,
 }: EditorPanelProps) {
   const timerRef = useRef(null)
+  const debounceRef = useRef(null)
   const [copied, setCopied] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
   const {
     records,
     activeId,
+    initialFilename,
     importRecord,
     updateActiveRecord,
     deleteRecord,
     setActiveId,
   } = useHistory()
+
+  const handleEditorChange = (val: string) => {
+    const text = val || ''
+    onChange(text)
+
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    debounceRef.current = setTimeout(() => {
+      if (!activeId) {
+        if (text.trim() && text !== '# Role: \n\n# Task: \n\n# AC: \n') {
+          importRecord(text, 'prompt.md')
+        }
+      } else {
+        updateActiveRecord(text)
+      }
+    }, 500)
+  }
 
   const handleCopy = async () => {
     if (copied) return
@@ -45,6 +65,12 @@ export default function EditorPanel({
       setCopied(false)
       timerRef.current = null
     }, 2000)
+  }
+
+  const handleNew = () => {
+    const defaultContent = '# Role: \n\n# Task: \n\n# AC: \n'
+    onChange(defaultContent)
+    setActiveId(null)
   }
 
   const handleImport = () => {
@@ -73,7 +99,7 @@ export default function EditorPanel({
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'prompt.md'
+    a.download = initialFilename
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -85,7 +111,7 @@ export default function EditorPanel({
         <div className="flex items-center gap-2 text-sm text-white/50 font-mono">
           <span>Editor</span>
           <ChevronRight className="w-4 h-4" />
-          <span className="text-white/80">prompt.md</span>
+          <span className="text-white/80">{initialFilename}</span>
         </div>
 
         <div className="flex items-center">
@@ -102,6 +128,10 @@ export default function EditorPanel({
             onEvent={() => setHistoryOpen(!historyOpen)}
           >
             <History className="w-4 h-4" />
+          </SymbolIcon>
+
+          <SymbolIcon title="新建" onEvent={handleNew}>
+            <Plus className="w-4 h-4" />
           </SymbolIcon>
 
           <SymbolIcon title="导入" onEvent={handleImport}>
@@ -121,11 +151,7 @@ export default function EditorPanel({
           defaultLanguage="markdown"
           theme="vs-dark"
           value={content}
-          onChange={(val) => {
-            const text = val || ''
-            onChange(text)
-            updateActiveRecord(text)
-          }}
+          onChange={handleEditorChange}
           onMount={onMount}
           options={editorOptions as any}
         />

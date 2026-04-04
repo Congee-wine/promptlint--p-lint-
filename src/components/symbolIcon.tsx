@@ -1,8 +1,4 @@
-type SymbolIconProps = {
-  title: string
-  onEvent: () => void
-  children: React.ReactNode
-}
+import { type SymbolIconProps } from '@/types'
 
 function SymbolIcon({ title, onEvent, children }: SymbolIconProps) {
   return (

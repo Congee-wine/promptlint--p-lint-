@@ -1,5 +1,5 @@
-import { type LintResult } from '@/types'
 import { cn } from '@/lib/utils'
+import { type SidebarProps } from '@/types'
 import {
   ShieldCheck,
   AlertTriangle,
@@ -11,18 +11,6 @@ import {
   CheckCircle2,
   XCircle,
 } from 'lucide-react'
-
-interface SidebarProps {
-  score: number
-  lintResults: LintResult[]
-  analysis: any
-
-  onAnalyze: () => void
-  onFix: () => void
-
-  isAnalyzing: boolean
-  isFixing: boolean
-}
 
 export default function Sidebar(props: SidebarProps) {
   const {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 const STORAGE_KEY = 'promptlint_history'
+const ACTIVE_ID_KEY = 'promptlint_active_id'
 
 export interface HistoryRecord {
   id: string
@@ -18,13 +19,36 @@ export function useHistory() {
     }
   }
 
-  const [currentContent, setCurrentContent] = useState<string>('')
-  const [records, setRecords] = useState<HistoryRecord[]>(load)
-  const [activeId, setActiveId] = useState<string | null>(null)
+  const loadActiveId = (): string | null => {
+    return localStorage.getItem(ACTIVE_ID_KEY)
+  }
+
+  const initialRecords = load()
+  const initialActiveId = loadActiveId()
+
+  const initialContent =
+    initialRecords.find((r) => r.id === initialActiveId)?.content ??
+    '# Role: \n\n# Task: \n\n# AC: \n'
+
+  const initialFilename =
+    initialRecords.find((r) => r.id === initialActiveId)?.filename ??
+    'prompt.md'
+
+  const [records, setRecords] = useState<HistoryRecord[]>(initialRecords)
+  const [activeId, setActiveIdState] = useState<string | null>(initialActiveId)
 
   const persist = (updated: HistoryRecord[]) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
     setRecords(updated)
+  }
+
+  const setActiveId = (id: string | null) => {
+    if (id) {
+      localStorage.setItem(ACTIVE_ID_KEY, id)
+    } else {
+      localStorage.removeItem(ACTIVE_ID_KEY)
+    }
+    setActiveIdState(id)
   }
 
   const importRecord = (content: string, filename: string) => {
@@ -56,9 +80,11 @@ export function useHistory() {
   return {
     records,
     activeId,
+    initialContent,
+    initialFilename,
+    setActiveId,
     importRecord,
     updateActiveRecord,
     deleteRecord,
-    setActiveId,
   }
 }

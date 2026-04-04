@@ -1,18 +1,7 @@
 import { useState } from 'react'
 import { deepAnalyzePrompt, autoFixPrompt } from '@/services/lintService'
 
-interface UsePromptAIResult {
-  analysis: any
-  isAnalyzing: boolean
-  isFixing: boolean
-  handleDeepAnalyze: (content: string) => Promise<void>
-  handleAutoFix: (
-    content: string,
-    onFix?: (fixed: string) => void,
-  ) => Promise<void>
-}
-
-export function usePromptAI(): UsePromptAIResult {
+export function usePromptAI() {
   const [analysis, setAnalysis] = useState<any>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [isFixing, setIsFixing] = useState(false)
@@ -40,5 +29,11 @@ export function usePromptAI(): UsePromptAIResult {
     }
   }
 
-  return { analysis, isAnalyzing, isFixing, handleDeepAnalyze, handleAutoFix }
+  return {
+    analysis,
+    isAnalyzing,
+    isFixing,
+    handleDeepAnalyze,
+    handleAutoFix,
+  }
 }
