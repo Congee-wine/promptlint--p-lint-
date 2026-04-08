@@ -59,7 +59,7 @@ export default function Sidebar(props: SidebarProps) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-8">
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-hide">
         {/* 代码检查摘要区域 */}
         <section className="space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-white/50 flex items-center gap-2">
@@ -86,8 +86,10 @@ export default function Sidebar(props: SidebarProps) {
                 >
                   {res.severity === 'error' ? (
                     <XCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  ) : (
+                  ) : res.severity === 'warning' ? (
                     <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                  ) : (
+                    <Info className="w-4 h-4 shrink-0 mt-0.5" />
                   )}
                   <div>
                     <div className="font-semibold mb-1">
@@ -96,6 +98,11 @@ export default function Sidebar(props: SidebarProps) {
                     <div className="opacity-80 leading-relaxed">
                       {res.message}
                     </div>
+                    {res.suggest && (
+                      <div className="mt-1.5 opacity-60 text-xs leading-relaxed border-t border-current/20 pt-1.5">
+                        💡 {res.suggest}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
