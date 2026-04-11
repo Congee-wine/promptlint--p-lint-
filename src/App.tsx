@@ -3,6 +3,7 @@ import { type OnMount } from '@monaco-editor/react'
 import Sidebar from '@/components/sidebar'
 import EditorPanel from '@/components/editorPanel'
 import { useLint, usePromptAI, useHistory } from '@/hooks'
+import { calculateScore } from './utils/calculateScore'
 import { type LintResult } from '@/types'
 
 export default function App() {
@@ -40,7 +41,7 @@ export default function App() {
     return () => clearTimeout(timer)
   }, [content])
 
-  const score = analysis?.score || 100 - lintResults.length * 10
+  const score = calculateScore(lintResults, analysis?.score)
 
   const handleFix = () => {
     handleAutoFix(content, (fixed) => {
