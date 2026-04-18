@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { type OnMount } from '@monaco-editor/react'
 import Sidebar from '@/components/sidebar'
 import EditorPanel from '@/components/editorPanel'
+import DiffModal from '@/components/diffModal'
 import { useLint, usePromptAI, useHistory } from '@/hooks'
 import { calculateScore } from './utils/calculateScore'
 import { type LintResult } from '@/types'
@@ -14,8 +15,16 @@ export default function App() {
   const monacoRef = useRef<any>(null)
 
   const { runLint, lintResults } = useLint(editorRef, monacoRef)
-  const { analysis, isAnalyzing, isFixing, handleDeepAnalyze, handleAutoFix } =
-    usePromptAI()
+  const {
+    analysis,
+    isAnalyzing,
+    isFixing,
+    diffResult,
+    handleDeepAnalyze,
+    handleAutoFix,
+    acceptFix,
+    rejectFix,
+  } = usePromptAI()
 
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
@@ -44,7 +53,13 @@ export default function App() {
   const score = calculateScore(lintResults, analysis?.score)
 
   const handleFix = () => {
-    handleAutoFix(content, (fixed) => {
+    // 只触发 AI 重构，结果会存入 diffResult，弹窗会自动显示
+    handleAutoFix(content)
+  }
+
+  // 用户在 diff 弹窗点"接受" → 把重构内容写入编辑器
+  const handleAcceptFix = () => {
+    acceptFix((fixed) => {
       setContent(fixed)
       runLint(fixed)
       updateActiveRecord(fixed)
@@ -114,6 +129,16 @@ export default function App() {
         onChange={setContent}
         onMount={handleEditorDidMount}
       />
+
+      {/* Diff 弹窗：AI 重构完成后显示，让用户对比后决定是否接受 */}
+      {diffResult && (
+        <DiffModal
+          original={diffResult.original}
+          modified={diffResult.fixed}
+          onAccept={handleAcceptFix}
+          onReject={rejectFix}
+        />
+      )}
     </div>
   )
 }
